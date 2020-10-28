@@ -57,8 +57,6 @@ const auth = {
            return  sessionStorage.getItem('profile')
         }
     }
-
-
 }
 
 export default auth
