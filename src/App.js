@@ -1,5 +1,6 @@
 import React, { useState, useMemo, Fragment } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from "react-bootstrap";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { AuthContext } from './components/shared/context/AuthContext'
@@ -33,12 +34,17 @@ function App() {
                     <ToastContainer
                         autoClose={3000}
                         position="top-right"
-                        hideProgressBar={true}
-                        closeOnClick={true}
-                        pauseOnHover={true}
+                       // hideProgressBar
+                        newestOnTop
+                        closeOnClick
+                      //  toast-top-full-width
+                        pauseOnHover
+                        pauseOnFocusLoss
                         rtl={false}
-                        draggable={true}
-                        style={{width: "auto"}}
+                        draggable
+                        // style={{
+                        //   //  width: "auto"}
+                        // }
                     />
                     <AuthContext.Provider value={valueAuth}>
                         <MenuContext.Provider value={valueMenu}>

@@ -13,18 +13,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from '@material-ui/core/Switch'
 import Button from "@material-ui/core/Button";
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation} from 'react-router-dom'
 import { Typography } from "@material-ui/core";
 
-const mgInitialState = {
-  mgCode:'',
-  mgDescription: '',
-  mgRoute: '',
-  mgActive: true,
-  mgLabel: '',
-  mgSortBy: '',
-  mgStatus: "A.ACT"
-}
+
 
 const initialStatus = {
   compositeStatus: '', 
@@ -32,14 +24,16 @@ const initialStatus = {
   cases: ''
 }
 
-const MenuGroupAdd = (props) => {
-  const [menuGroup, setMenuGroup] = useState(mgInitialState)
+const MenuGroupEdit = (props) => {
+  const history = useHistory()
+  const location = useLocation()
+
+  const [menuGroup, setMenuGroup] = useState(location.state)
   const [status, setStatus] = useState([initialStatus])
   const [open, setOpen] =useState(true)
   const [modified, setModified] = useState(false)
   const {addMenuGroupHandler} = props
-  const history = useHistory()
-
+ 
   
   //const validStatus = useMemo(() => {
 
@@ -74,9 +68,9 @@ const MenuGroupAdd = (props) => {
     setModified(true)
   }
 
-  const handleAdd = (event) =>{
+  const handleEdit = (event) =>{
     addMenuGroupHandler(menuGroup)
-    setModified(mgInitialState)
+    //setModified(mgInitialState)
   }
   const handleClose = () => {
     setOpen(false)
@@ -85,6 +79,7 @@ const MenuGroupAdd = (props) => {
 
   const saveMenuGroup = () => {
     let data = {
+      id : menuGroup.id,
       mgCode: menuGroup.mgCode,
       mgDescription: menuGroup.mgDescription,
       mgRoute: menuGroup.mgRoute,
@@ -93,7 +88,7 @@ const MenuGroupAdd = (props) => {
       mgStatus: menuGroup.mgStatus
 
     }
-    MenuService.saveAMenuGroup(data)
+    MenuService.updateAMenuGroup(data)
       .then(response => (response.data.returnCode == '00'
       ? (
         toast.success(response.data.returnLabel),
@@ -112,10 +107,10 @@ const MenuGroupAdd = (props) => {
         onClose={handleClose}
         aria-labelledby='form-dialog-title'
       >
-        <DialogTitle id='form-dialog-title'> Add a Menu Group</DialogTitle>
+        <DialogTitle id='form-dialog-title'> Edit</DialogTitle>
         <DialogContent>
             <DialogContentText >
-              Fill the form and press ADD
+              Fill the form and press Save
             </DialogContentText>
           <TextField
           required
@@ -209,12 +204,12 @@ const MenuGroupAdd = (props) => {
           select
           fullWidth
           name='mgStatus'
-          value={menuGroup.mgStatus}
+          value={menuGroup.mgStatus.fullStatus}
           onChange={handleInputChange}
           
           >
             {status
-            .filter((statu) => (statu.cases.includes("C")))
+            .filter((statu) => (statu.cases.includes("U")))
             .map((statu, i) => (
               <MenuItem key={i} value={statu.compositeStatus}>
                 {statu.description}
@@ -232,7 +227,7 @@ const MenuGroupAdd = (props) => {
               onClick={saveMenuGroup} 
               disable={!modified} 
               color='primary'>
-                <Typography>Add</Typography>
+                <Typography>Edit</Typography>
           </Button>
         </DialogActions>
       </Dialog>
@@ -240,6 +235,6 @@ const MenuGroupAdd = (props) => {
   )
 }
 
-export default MenuGroupAdd
+export default MenuGroupEdit
 
 

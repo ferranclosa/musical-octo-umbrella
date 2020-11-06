@@ -12,7 +12,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { toast } from 'react-toastify';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link, useLocation } from 'react-router-dom';
 
 import auth from '../../shared/authentication/auth-helper';
 import { IconButton } from '@material-ui/core';
@@ -29,9 +29,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const GroupList = props => {
+const FunctionList = props => {
   const classes = useStyles();
-  let history = useHistory();
+  let history = useHistory()
+  let location = useLocation()
 
   const [items, setItems] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -41,24 +42,55 @@ const GroupList = props => {
   const [totalNumberOfItems, setTotalNumberOfItems] = useState(0);
   const [totalNumberOfPages, setTotalNumberOfPages] = useState(0);
   const [pageNo, setPageNo] = useState(0);
+  const [groupId, setGroupId] = useState(0)
+  
+  
 
   useEffect(() => {
-    setMenu({ ...menu, header: 'Menu Groups' });
+    setMenu({ ...menu, header: 'Menu Functions' })
+   
   }, []);
 
   const requestToSearch = pageable => {
-    if (pageable.searchByWhat == '') {
-      retrieveItems(pageable);
+    const groupId =  
+    (location.state && location.state.groupId) != undefined
+                ? location.state.groupId
+                : null;
+             
+    if(groupId != null){
+          retrieveParentItems(pageable, location.state.groupId)
     } else {
-      findBySearch(pageable);
+      if (pageable.searchByWhat == '') {
+        retrieveItems(pageable);
+      } else {
+        findBySearch(pageable);
+      }
     }
+    
   };
 
-  const retrieveItems = pageable => {
-    MenuService.findGroups(pageable)
+  const retrieveParentItems = (pageable, groupId) => {
+    MenuService.getGroupFunctions(pageable, groupId)
       .then(response =>
         response.data.returnCode === '00'
-          ? (setItems(response.data.menuGroups),
+          ? (setItems(response.data.listOfMenuFunctions),
+            setLastItemsProvided(response.data.lastItemsProvided),
+            setTotalNumberOfItems(response.data.totalNumberOfItems),
+            setTotalNumberOfPages(response.data.totalNumberOfPages),
+            toast.success('There are some functions to this group'))
+          : (setItems([]), toast.warning(response.data.returnLabel))
+      )
+      .catch(e => {
+        toast.error(e);
+      });
+  };
+
+
+  const retrieveItems = pageable => {
+    MenuService.findAllFunctions(pageable)
+      .then(response =>
+        response.data.returnCode === '00'
+          ? (setItems(response.data.listOfMenuFunctions),
             setLastItemsProvided(response.data.lastItemsProvided),
             setTotalNumberOfItems(response.data.totalNumberOfItems),
             setTotalNumberOfPages(response.data.totalNumberOfPages),
@@ -76,43 +108,45 @@ const GroupList = props => {
 
   const deleteHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt04',
+      pathname: '/route_Z3Opt04',
       state: { ...row.original },
     });
   };
 
   const editHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt02',
+      pathname: '/route_Z3Opt02',
       state: { ...row.original },
     });
   };
 
   const viewHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt05',
+      pathname: '/route_Z3Opt05',
       state: { ...row.original },
     });
   };
 
   const addHandler = () => {
-    history.push('/route_Z2F6');
+    history.push('/route_Z3F6');
   };
 
   const showList = useMemo(() => [10, 15, 20, 25, 50], []);
 
   const sortList = useMemo(
     () => [
-      { label: 'Code', code: 'mgCode' },
-      { label: 'Route', code: 'mgRoute' },
+      { label: 'Code', code: 'mfCode' },
+      { label: 'Route', code: 'mfRoute' },
+      { label: 'Sort By', code: 'mfSortBy' },
+      
     ],
     []
   );
 
   const searchList = useMemo(
     () => [
-      { label: 'Code', code: 'mgCode' },
-      { label: 'Route', code: 'mgRoute' },
+      { label: 'Code', code: 'mfCode' },
+      { label: 'Route', code: 'mfRoute' },
     ],
     []
   );
@@ -120,23 +154,23 @@ const GroupList = props => {
   const columns = useMemo(
     () => [
       { Header: 'Id', accessor: 'id' },
-      { Header: 'Code', accessor: 'mgCode' },
-      { Header: 'Description.', accessor: 'mgDescription' },
-      { Header: 'Route', accessor: 'mgRoute' },
-      { Header: 'Label', accessor: 'mgLabel' },
-      { Header: 'Sort Order', accessor: 'mgSortBy' },
-      { Header: 'Active', accessor: 'mgActive', Cell: ({ row }) => (row.original.mgActive ? 'Active' : 'Disabled') },
+      { Header: 'Code', accessor: 'mfCode' },
+      { Header: 'Description.', accessor: 'mfDescription' },
+      { Header: 'Route', accessor: 'mfRoute' },
+      { Header: 'Label', accessor: 'mfLabel' },
+      { Header: 'Sort Order', accessor: 'mfSortBy' },
+      { Header: 'Active', accessor: 'mfActive', Cell: ({ row }) => (row.original.mfActive ? 'Active' : 'Disabled') },
       {
-        Header: 'No of Functions',
-        accessor: 'mgFunctions.length',
+        Header: 'No of Options available',
+        accessor: 'mfOptions.length',
         Cell: line => (
           <Link
             to={{
-              pathname: '/route_Z3',
-              state: { groupId: line.row.original.id, masterGroup: line.row.original.mgLabel },
+              pathname: '/route_Z2b',
+              state: { functionId: line.row.original.id , masterFunction: line.row.original.mfLabel },
             }}
           >
-            {line.row.original.mgFunctions.length} Functions
+            {line.row.original.mfOptions.length} Options
           </Link>
         ),
       },
@@ -203,7 +237,7 @@ const GroupList = props => {
             columns={columns}
             data={items}
             setSelectedRows={setSelectedRows}
-            //  fetchData={requestToSearch}>
+           
           ></EnhancedTable>
         </Grid>
         <Grid item xs={12}>
@@ -217,4 +251,4 @@ const GroupList = props => {
   );
 };
 
-export default GroupList;
+export default FunctionList;

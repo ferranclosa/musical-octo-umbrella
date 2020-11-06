@@ -157,7 +157,7 @@ const TopBar = (props) => {
             .then(response => (response.data.returnCode === "00"
                     ? (
                             setGroups(response.data.menuGroups),
-                            setFunctions(groups.getFunctions),
+                            setFunctions(groups.mgFunctions),
                             setMenu({...menu, loaded: true})
                     )
                     : setGroups([])
@@ -235,8 +235,9 @@ const TopBar = (props) => {
                 <MenuList>
                     {groups
                           .filter(group => group.mgActive)
-                          .filter(group => group.mgAccessLevel <= level)
-                        .map(({mgLabel, mgCode, mgRoute, mgFunctions}, i) => (
+                          //.filter(group => group.mgAccessLevel <= level)
+                          .filter(group => group.mgFunctions.length > 0)
+                          .map(({mgLabel, mgCode, mgRoute, mgFunctions}, i) => (
                             <NestedMenu
                                 {...props}
                                 key={i}

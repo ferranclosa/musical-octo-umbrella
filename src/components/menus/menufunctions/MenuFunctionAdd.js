@@ -32,7 +32,7 @@ const initialStatus = {
   cases: ''
 }
 
-const MenuGroupAdd = (props) => {
+const MenuFunctionAdd = (props) => {
   const [menuGroup, setMenuGroup] = useState(mgInitialState)
   const [status, setStatus] = useState([initialStatus])
   const [open, setOpen] =useState(true)
@@ -240,6 +240,6 @@ const MenuGroupAdd = (props) => {
   )
 }
 
-export default MenuGroupAdd
+export default MenuFunctionAdd
 
 
