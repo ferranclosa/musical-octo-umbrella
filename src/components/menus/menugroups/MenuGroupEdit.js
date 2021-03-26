@@ -30,9 +30,13 @@ const MenuGroupEdit = (props) => {
 
   const [menuGroup, setMenuGroup] = useState(location.state)
   const [status, setStatus] = useState([initialStatus])
+  const [mgSts, setMgSts] = useState("")
+  
   const [open, setOpen] =useState(true)
+  
   const [modified, setModified] = useState(false)
   const {addMenuGroupHandler} = props
+
  
   
   //const validStatus = useMemo(() => {
@@ -50,6 +54,7 @@ const MenuGroupEdit = (props) => {
       .catch(e => {
         setStatus([])
       })
+      setMgSts(location.state.mgStatus.fullStatus)
     }, [])
       
     const validTypes = useMemo(
@@ -60,6 +65,11 @@ const MenuGroupEdit = (props) => {
   const handleInputChange = (event) => {
     const {name, value } = event.target;
     setMenuGroup({...menuGroup, [name]: value})
+    setModified(true)
+  }
+
+  const handleSelectChange = (event) => {
+    setMgSts(event.target.value)
     setModified(true)
   }
 
@@ -85,7 +95,7 @@ const MenuGroupEdit = (props) => {
       mgRoute: menuGroup.mgRoute,
       mgSortBy: menuGroup.mgSortBy,
       mgLabel: menuGroup.mgLabel, 
-      mgStatus: menuGroup.mgStatus
+      mgStatus: mgSts
 
     }
     MenuService.updateAMenuGroup(data)
@@ -203,9 +213,10 @@ const MenuGroupEdit = (props) => {
           placeholder='Status of the record '
           select
           fullWidth
-          name='mgStatus'
-          value={menuGroup.mgStatus.fullStatus}
-          onChange={handleInputChange}
+          name='mgSts'
+          value={mgSts}
+          onChange={handleSelectChange}
+          //onSelect={handleSelectChange}
           
           >
             {status

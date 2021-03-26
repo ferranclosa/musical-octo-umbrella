@@ -3,7 +3,7 @@ import {AuthContext} from "./context/AuthContext";
 import clsx from "clsx"
 import AuthService from "../../services/AuthService";
 import NestedMenu from "./NestedMenu";
-import auth from "./authentication/auth-helper"
+import auth from '../auth/auth-helper'
 import { useHistory, useLocation  } from 'react-router-dom'
 import {makeStyles, useTheme} from '@material-ui/core/styles'
 import {toast} from 'react-toastify'
@@ -35,6 +35,10 @@ const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        display: 'flex', 
+        display:'-ms-flexbox',
+        position:'relative'
+
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -45,6 +49,12 @@ const useStyles = makeStyles((theme) => ({
     hide: {
         display: 'none'
     },
+    appBar:{
+        transition: theme.transitions.create(["margin", "width"], {
+            easing: theme.transitions.easing.sharp, 
+            duration: theme.transitions.duration.leavingScreen,
+        })
+    },
     appBarShift: {
         width: `calc(100% - ${drawerWidth}px`,
         marginLeft: drawerWidth,
@@ -54,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
     toolbarButtonsRight: {
         marginRight: 'auto',
+        
     },
     
     toolbarButtons: {
@@ -128,20 +139,25 @@ const TopBar = (props) => {
         history.push('/login')
     }
     const logout = () => {
-        const usrEmail = sessionStorage.getItem('currentUser')
-        AuthService.signOut(usrEmail)
+        const data = {
+            userName: sessionStorage.getItem('currentUser')
+        }
+        AuthService.signOut(data)
             .then(response => (response.data.returnCode === "00"
                 ? (
-                    auth.clearJWT(),
-                        setUser({...user, currentUser: '', loggedIn: false}),
-                        setMenu({...menu, header: ''}),
+                       setUser({...user, currentUser: '', loggedIn: false}),
+                       setMenu({...menu, header: ''}),
                        history.push('/')
                 )
                 : (
-                    toast.error(response.data.returnMessages[0])
+                    toast.error(response.data.returnLabel),
+                    toast.warning(response.data.returnMessages)
+                    
                 ))
             )
-    }
+            auth.clearJWT()
+   
+        }
 
 
 
@@ -199,13 +215,7 @@ const TopBar = (props) => {
                             
                             <div className={classes.toolbarButtons}>
                                 {user.loggedIn == true ? 
-                                <Button > <Typography >{auth.getSessionProfile()}</Typography> </Button> 
-                                :
-                                    null}
-                            </div>
-                            <div className={classes.toolbarButtonsRight}>
-                                {user.loggedIn == true ? 
-                                <Button onClick={logout}> <Typography >Logout {auth.getSessionProfile()}</Typography> </Button> 
+                                <Button onClick={logout}> <Typography >Logout {auth.getSessionCurrentUser()}</Typography> </Button> 
                                 :
                                 <Button onClick={login}> <Typography >Login</Typography> </Button> 
                                }

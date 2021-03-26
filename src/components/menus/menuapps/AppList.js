@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const GroupList = props => {
+const AppList = props => {
   const classes = useStyles();
   let history = useHistory();
 
@@ -43,7 +43,7 @@ const GroupList = props => {
   const [pageNo, setPageNo] = useState(0);
 
   useEffect(() => {
-    setMenu({ ...menu, header: 'Menu Groups' });
+    setMenu({ ...menu, header: 'Menu Applications' });
   }, []);
 
   const requestToSearch = pageable => {
@@ -55,10 +55,10 @@ const GroupList = props => {
   };
 
   const retrieveItems = pageable => {
-    MenuService.findGroups(pageable)
+    MenuService.findApps(pageable)
       .then(response =>
         response.data.returnCode === '00'
-          ? (setItems(response.data.menuGroups),
+          ? (setItems(response.data.menuApps),
             setLastItemsProvided(response.data.lastItemsProvided),
             setTotalNumberOfItems(response.data.totalNumberOfItems),
             setTotalNumberOfPages(response.data.totalNumberOfPages),
@@ -76,43 +76,41 @@ const GroupList = props => {
 
   const deleteHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt04',
+      pathname: '/route_Z1Opt04',
       state: { ...row.original },
     });
   };
 
   const editHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt02',
+      pathname: '/route_Z1Opt02',
       state: { ...row.original },
     });
   };
 
   const viewHandler = row => {
     history.push({
-      pathname: '/route_Z2Opt05',
+      pathname: '/route_Z1Opt05',
       state: { ...row.original },
     });
   };
 
   const addHandler = () => {
-    history.push('/route_Z2F6');
+    history.push('/route_Z1F6');
   };
 
   const showList = useMemo(() => [10, 15, 20, 25, 50], []);
 
   const sortList = useMemo(
     () => [
-      { label: 'Code', code: 'mgCode' },
-      { label: 'Route', code: 'mgRoute' },
+      { label: 'Application', code: 'maApplication' }
     ],
     []
   );
 
   const searchList = useMemo(
     () => [
-      { label: 'Code', code: 'mgCode' },
-      { label: 'Route', code: 'mgRoute' },
+      { label: 'Application', code: 'maApplication' }
     ],
     []
   );
@@ -120,23 +118,20 @@ const GroupList = props => {
   const columns = useMemo(
     () => [
       { Header: 'Id', accessor: 'id' },
-      { Header: 'Code', accessor: 'mgCode' },
-      { Header: 'Description.', accessor: 'mgDescription' },
-      { Header: 'Route', accessor: 'mgRoute' },
-      { Header: 'Label', accessor: 'mgLabel' },
-      { Header: 'Sort Order', accessor: 'mgSortBy' },
-      { Header: 'Active', accessor: 'mgActive', Cell: ({ row }) => (row.original.mgActive ? 'Active' : 'Disabled') },
+      { Header: 'Application', accessor: 'maApplication' },
+      { Header: 'Secured.', accessor: 'maIsAccessSecured', Cell: ({ row }) => (row.original.maIsAccessSecured ? 'Yes' : 'No') },
+      { Header: 'Status', accessor: 'maStatus.fullStatus' },
       {
-        Header: 'No of Functions',
-        accessor: 'mgFunctions.length',
+        Header: 'No of Group Functions',
+        accessor: 'maGroups.length',
         Cell: line => (
           <Link
             to={{
-              pathname: '/route_Z3',
-              state: { groupId: line.row.original.id, masterGroup: line.row.original.mgLabel },
+              pathname: '/route_Z2',
+              state: { groupId: line.row.original.id, masterGroup: line.row.original.maApplication },
             }}
           >
-            {line.row.original.mgFunctions.length} Functions
+            {line.row.original.maGroups.length} Group Functions
           </Link>
         ),
       },
@@ -217,4 +212,4 @@ const GroupList = props => {
   );
 };
 
-export default GroupList;
+export default AppList;

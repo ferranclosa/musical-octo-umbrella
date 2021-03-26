@@ -2,12 +2,9 @@ import React, { Fragment, useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
 import ToolTip from '@material-ui/core/Tooltip'
 import IconButton from '@material-ui/core/IconButton'
-import Button from '@material-ui/core/Button'
 import AddIcon from '@material-ui/icons/Add'
 import Typography from '@material-ui/core/Typography'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-import { toast } from 'react-toastify'
-import { useHistory, useLocation } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core'
 
 
@@ -24,8 +21,6 @@ const useToolBarStyles = makeStyles(theme => ({
 
 const FootBar = (props) => {
     const classes = useToolBarStyles()
-    let history = useHistory()
-    let location = useLocation()
     const [currentItem, setCurrentItem ] = useState()
 
     useEffect(() => {

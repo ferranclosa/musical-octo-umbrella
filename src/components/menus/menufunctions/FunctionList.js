@@ -14,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, Link, useLocation } from 'react-router-dom';
 
-import auth from '../../shared/authentication/auth-helper';
+import auth from '../../auth/auth-helper';
 import { IconButton } from '@material-ui/core';
 import { SettingsRemoteRounded } from '@material-ui/icons';
 import { MenuContext } from '../../shared/context/MenuContext';
@@ -154,6 +154,7 @@ const FunctionList = props => {
   const columns = useMemo(
     () => [
       { Header: 'Id', accessor: 'id' },
+      { Header: 'Belongs to', accessor: 'mfBelongsTo' },
       { Header: 'Code', accessor: 'mfCode' },
       { Header: 'Description.', accessor: 'mfDescription' },
       { Header: 'Route', accessor: 'mfRoute' },
@@ -166,7 +167,7 @@ const FunctionList = props => {
         Cell: line => (
           <Link
             to={{
-              pathname: '/route_Z2b',
+              pathname: '/route_Z4',
               state: { functionId: line.row.original.id , masterFunction: line.row.original.mfLabel },
             }}
           >

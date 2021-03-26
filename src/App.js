@@ -7,6 +7,8 @@ import { AuthContext } from './components/shared/context/AuthContext'
 import { MenuContext } from "./components/shared/context/MenuContext";
 import TopBar from './components/shared/TopBar'
 import theme from "./components/shared/styles/Theme";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
 
 import './App.css';
 import { Grid, makeStyles } from "@material-ui/core";
